@@ -1,0 +1,45 @@
+Mccloud::Config.run do |config|
+
+  #############################################################
+  ## ** Provider Section ** - list alls keys to be used
+  #############################################################
+
+  #################
+  # Host provider for standalone hosts
+  config.provider.define "host" do |provider_config|
+    provider_config.provider.flavor = :host
+  end
+
+
+  #############################################################
+  # ** Server section ** Specifies server options
+  #############################################################
+
+  require 'chef'
+  nodes = []
+  Dir["databags/nodes/*.json"].each do |n|
+    nodes << JSON.parse(IO.read(n))
+  end
+
+  nodes.each do |n|
+    config.vm.define n.name do |vm_config|
+      vm_config.vm.provider   = "host"
+      vm_config.vm.ip_address = n.automatic_attrs[:ipaddress]
+      vm_config.vm.user       = "root"
+
+      vm_config.vm.bootstrap  = "bootstrap/omnibus"
+      vm_config.vm.bootstrap_user  = "ubuntu"
+      vm_config.vm.bootstrap_password  = "mypassword"
+
+      vm_config.vm.provision :chef_solo do |chef|
+        chef.cookbooks_path = [ "cookbooks", "monigusto/cookbooks","site-cookbooks" ]
+        chef.roles_path = "roles"
+        chef.data_bags_path = "databags"
+        chef.clean_after_run = false
+        chef.add_role "manigusto_server"
+      end
+    end
+  end
+
+
+end # End Mccloud

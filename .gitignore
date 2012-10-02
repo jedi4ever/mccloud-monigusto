@@ -16,3 +16,8 @@ tmp
 .yardoc
 _yardoc
 doc/
+
+# Monigusto
+monigusto/tmp
+monigusto/cookbooks
+monigusto/Cheffile.lock

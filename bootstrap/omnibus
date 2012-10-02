@@ -1,0 +1,1 @@
+sudo true && curl -L https://www.opscode.com/chef/install.sh | sudo bash -s -- -v 10.12.0
